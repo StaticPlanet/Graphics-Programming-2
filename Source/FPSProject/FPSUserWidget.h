@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/Progressbar.h"
+#include "Components/TextBlock.h"
 #include "Blueprint/UserWidget.h"
 #include "FPSUserWidget.generated.h"
 
@@ -20,8 +21,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* HealthBar;
 
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* ScoreText;
+
 	UFUNCTION()
 		void SetHealthbar(float percentage);
 
+	UFUNCTION()
+		void SetScore(int scoreAmount);
+private:
+	int UIScore = 0;
 
 };
