@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "Components/StaticMeshComponent.h"
 #include "CoreMinimal.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Actor.h"
 #include "FPSDummy.generated.h"
 
@@ -25,6 +25,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		USkeletalMeshComponent* DummyMesh;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UCapsuleComponent* CollisionComponent;
+
+	UFUNCTION()
+		void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
+

@@ -5,7 +5,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "TurretAnimInterFace.h"
 
-
+#define OUT
 // Sets default values
 AFPSTurret::AFPSTurret()
 {
@@ -33,6 +33,8 @@ AFPSTurret::AFPSTurret()
 
 	FollowTarget = CreateDefaultSubobject<USceneComponent>(TEXT("FollowTarget"));
 	FollowTarget->SetupAttachment(Root);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +51,7 @@ void AFPSTurret::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateLookAtTarget(DeltaTime);
+	TraceBeam();
 }
 
 void AFPSTurret::UpdateLookAtTarget(float DeltaTime)
@@ -88,4 +91,40 @@ void AFPSTurret::ChangeBeamTarget()
 
 	RotationDelta = TargetRotation - LookRotation;
 	RotationDelta.Normalize();
+}
+
+void AFPSTurret::SetBeamLength(float Length)
+{
+	Beam->SetRelativeScale3D(FVector(Length / 400, Beam->GetRelativeScale3D().Y, Beam->GetRelativeScale3D().Z));
+	Beam->SetRelativeLocation(FVector(Length / (-8), 0, 0));
+}
+
+void AFPSTurret::TraceBeam()
+{
+	FHitResult HitResult;
+
+	FVector Start = TurretMesh->GetSocketLocation("Beam");
+	FVector End = Start + Beam->GetForwardVector() * BeamLength;
+
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel
+	(
+		OUT HitResult,
+		Start,
+		End,
+		ECollisionChannel::ECC_Camera,
+		CollisionQueryParams
+	);
+
+	if (bHit) 
+	{
+		SetBeamLength(HitResult.Distance);
+	}
+	else
+	{
+		SetBeamLength(BeamLength);
+	}
+
 }

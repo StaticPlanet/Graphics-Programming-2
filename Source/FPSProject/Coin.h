@@ -28,6 +28,17 @@ public:
 
 	virtual void OnCollect() override;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		float RotationRate = 100;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		float CollectRotationRate = 1500;
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CoinMesh;
+
+	FTimerHandle DeathTimerHandle;
+	void DeathTimerComplete();
 };
+
+

@@ -9,31 +9,30 @@ void AFPSProjectGameModeBase::StartPlay()
 
 	ChangeMenuWidget(StartingWidgetClass);
 
-	check(GEngine != nullptr);
+	// Log to Screen
+	// C Assert
+	check(GEngine != nullptr)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Starting FPS Map")));
 
-	// Display a debug message for five seconds. 
-	// The -1 "Key" value argument prevents the message from being updated or refreshed.
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hello World, this is FPSGameMode!"));
-
+	UE_LOG(LogTemp, Warning, TEXT("Starting FPS Map"));
 }
 
-void AFPSProjectGameModeBase::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
+void AFPSProjectGameModeBase::ChangeMenuWidget(TSubclassOf<UFPSUserWidget> NewWidgetClass)
 {
-	// Check if there is a ui on screen
-	//if so remove it
-
-	if (CurrentWidget != nullptr) 
+	// Check if there a UI On screen
+	// If there is remove it
+	if (CurrentWidget != nullptr)
 	{
 		CurrentWidget->RemoveFromParent();
 		CurrentWidget = nullptr;
 	}
 
-	//create new ui
-	//add to veiwport
-
+	// Create a new UI
+	// Add to viewport
 	if (NewWidgetClass != nullptr)
 	{
-		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), NewWidgetClass);
+		CurrentWidget = CreateWidget<UFPSUserWidget>(GetWorld(), NewWidgetClass);
 		CurrentWidget->AddToViewport();
 	}
 }
+

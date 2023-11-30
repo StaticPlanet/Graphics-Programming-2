@@ -8,8 +8,18 @@ AFPSDummy::AFPSDummy()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	DummyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	
+	if (!CollisionComponent)
+	{
+		CollisionComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Component"));
+		RootComponent = CollisionComponent;
+	}
+	
+	if (!DummyMesh) 
+	{
+		DummyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+		DummyMesh->SetupAttachment(CollisionComponent);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -23,6 +33,11 @@ void AFPSDummy::BeginPlay()
 void AFPSDummy::Tick(float DeltaTime)
 {
 	
+
+}
+
+void AFPSDummy::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
 
 }
 

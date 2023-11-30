@@ -54,6 +54,13 @@ private:
 	UFUNCTION()
 		void ChangeBeamTarget();
 
+
+	UFUNCTION(BlueprintCallable)
+		void SetBeamLength(float Length);
+
+	UFUNCTION()
+		void TraceBeam();
+
 public:	
 	// Sets default values for this actor's properties
 	AFPSTurret();
@@ -61,6 +68,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		float BeamLength = 200.f;
+
 
 public:	
 	// Called every frame

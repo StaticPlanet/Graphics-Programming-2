@@ -19,7 +19,6 @@ ACoin::ACoin()
 void ACoin::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -27,10 +26,19 @@ void ACoin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	AddActorLocalRotation(FRotator(0, RotationRate * DeltaTime, 0));
 }
+
 
 void ACoin::OnCollect()
 {
 	Super::OnCollect();
-	UE_LOG(LogTemp, Warning, TEXT("Coin: OnCollect()"));
+
+	RotationRate = CollectRotationRate;
+	GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &ACoin::DeathTimerComplete, 0.5f, false);
+}
+
+void ACoin::DeathTimerComplete()
+{
+	Destroy();
 }

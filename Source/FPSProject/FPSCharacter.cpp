@@ -6,138 +6,129 @@
 // Sets default values
 AFPSCharacter::AFPSCharacter()
 {
-    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
 
-    // Create a first person camera component.
-    FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-    check(FPSCameraComponent != nullptr);
+	// FPS Camera
+	// Instantiate in constructors
+	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	check(FPSCameraComponent != nullptr);
 
-    // Attach the camera component to our capsule component.
-    FPSCameraComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
+	FPSCameraComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
+	FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
+	FPSCameraComponent->bUsePawnControlRotation = true;
 
-    // Position the camera slightly above the eyes.
-    FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
+	// Mesh
+	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	check(FPSMesh != nullptr);
 
-    // Enable the Pawn to control camera rotation.
-    FPSCameraComponent->bUsePawnControlRotation = true;
+	FPSMesh->SetupAttachment(FPSCameraComponent);
+	FPSMesh->bCastDynamicShadow = false;
+	FPSMesh->CastShadow = false;
 
-    // Create a first person mesh component for the owning player.
-    FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
-    check(FPSMesh != nullptr);
-
-    // Only the owning player sees this mesh.
-    FPSMesh->SetOnlyOwnerSee(true);
-
-    // Attach the FPS mesh to the FPS camera.
-    FPSMesh->SetupAttachment(FPSCameraComponent);
-
-    // Disable some environmental shadowing to preserve the illusion of having a single mesh.
-    FPSMesh->bCastDynamicShadow = false;
-    FPSMesh->CastShadow = false;
-
-    // The owning player doesn't see the regular (third-person) body mesh.
-    GetMesh()->SetOwnerNoSee(true);
+	GetMesh()->SetOwnerNoSee(true);
 }
 
 // Called when the game starts or when spawned
 void AFPSCharacter::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    if (GEngine)
-    {
-        // Display a debug message for five seconds. 
-        // The -1 "Key" value argument prevents the message from being updated or refreshed.
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using FPSCharacter."));
-    }
+	check(GEngine != nullptr)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Spawning BP_FPSCharacter")));
+
+	UE_LOG(LogTemp, Warning, TEXT("Spawning BP_FPSCharacter"));
 }
 
 // Called every frame
 void AFPSCharacter::Tick(float DeltaTime)
 {
-    Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
 void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    // Set up "movement" bindings.
-    PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
+	// Movement
+	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
 
-    // Set up "look" bindings.
-    PlayerInputComponent->BindAxis("Turn", this, &AFPSCharacter::AddControllerYawInput);
-    PlayerInputComponent->BindAxis("LookUp", this, &AFPSCharacter::AddControllerPitchInput);
+	// Look
+	PlayerInputComponent->BindAxis("LookHorizontal", this, &AFPSCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookVertical", this, &AFPSCharacter::AddControllerPitchInput);
 
-    // Set up "action" bindings.
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AFPSCharacter::StartJump);
-    PlayerInputComponent->BindAction("Jump", IE_Released, this, &AFPSCharacter::StopJump);
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
+	// Jump
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AFPSCharacter::StartJump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AFPSCharacter::EndJump);
+
+	// Fire
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 }
 
-void AFPSCharacter::MoveForward(float Value)
+void AFPSCharacter::MoveForward(float value)
 {
-    // Find out which way is "forward" and record that the player wants to move that way.
-    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
-    AddMovementInput(Direction, Value);
+	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
+	AddMovementInput(Direction, value);
 }
 
-void AFPSCharacter::MoveRight(float Value)
+void AFPSCharacter::MoveRight(float value)
 {
-    // Find out which way is "right" and record that the player wants to move that way.
-    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
-    AddMovementInput(Direction, Value);
+	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
+	AddMovementInput(Direction, value);
 }
 
 void AFPSCharacter::StartJump()
 {
-    bPressedJump = true;
+	bPressedJump = true;
 }
 
-void AFPSCharacter::StopJump()
+void AFPSCharacter::EndJump()
 {
-    bPressedJump = false;
+	bPressedJump = false;
 }
 
 void AFPSCharacter::Fire()
 {
-    // Attempt to fire a projectile.
-    if (ProjectileClass)
-    {
-        // Get the camera transform.
-        FVector CameraLocation;
-        FRotator CameraRotation;
-        GetActorEyesViewPoint(CameraLocation, CameraRotation);
+	// Nice easy way to get game mode from anywhere
+	//void AFPSProjectGameModeBase::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass) * GameMode = Cast<void AFPSProjectGameModeBase::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)>(UGameplayStatics::GetGameMode(GetWorld()));
+	//if (GameMode) {
+		Health -= 10;
+		float healthPercent = Health / MaxHealth;
 
-        // Set MuzzleOffset to spawn projectiles slightly in front of the camera.
-        MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
+		//GameMode->CurrentWidget->SetHealthBar(healthPercent);
+	//}
 
-        // Transform MuzzleOffset from camera space to world space.
-        FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+	UE_LOG(LogTemp, Warning, TEXT("Pressing Fire From Character"));
 
-        // Skew the aim to be slightly upwards.
-        FRotator MuzzleRotation = CameraRotation;
-        MuzzleRotation.Pitch += 10.0f;
+	if (!ProjectileClass) return;
 
-        UWorld* World = GetWorld();
-        if (World)
-        {
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.Owner = this;
-            SpawnParams.Instigator = GetInstigator();
+	// Precaculations of loc and rot
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
-            // Spawn the projectile at the muzzle.
-            AFPSProjectile* Projectile = World->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-            if (Projectile)
-            {
-                // Set the projectile's initial trajectory.
-                FVector LaunchDirection = MuzzleRotation.Vector();
-                Projectile->FireInDirection(LaunchDirection);
-            }
-        }
-    }
+	MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
+
+	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+	FRotator MuzzleRotation = CameraRotation;
+	MuzzleRotation.Pitch += 10.0f;
+
+	// Get World to spawn actor
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+
+	// Similar to unity Instantiate. Spawn Actor from class
+	AFPSProjectile* Projectile = World->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+
+	// Shoot projectile in direction
+	if (!Projectile) return;
+	FVector LaunchDirection = MuzzleRotation.Vector();
+	Projectile->FireInDirection(LaunchDirection);
 }

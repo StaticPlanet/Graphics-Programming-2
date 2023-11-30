@@ -3,3 +3,9 @@
 
 #include "FPSUserWidget.h"
 
+void UFPSUserWidget::SetHealthbar(float percentage)
+{
+	if (!HealthBar) return; //Validating its there
+
+	HealthBar->SetPercent(percentage);
+}
