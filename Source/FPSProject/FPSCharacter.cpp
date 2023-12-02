@@ -92,14 +92,20 @@ void AFPSCharacter::EndJump()
 
 void AFPSCharacter::Fire()
 {
-	// Nice easy way to get game mode from anywhere
-	//void AFPSProjectGameModeBase::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass) * GameMode = Cast<void AFPSProjectGameModeBase::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)>(UGameplayStatics::GetGameMode(GetWorld()));
-	//if (GameMode) {
-		Health -= 10;
+	//Call game mode from anywere
+	AFPSProjectGameModeBase* GameMode = Cast<AFPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	
+	if (GameMode) 
+	{
+		Health -= 5;
 		float healthPercent = Health / MaxHealth;
 
-		//GameMode->CurrentWidget->SetHealthBar(healthPercent);
-	//}
+		//Casting to game modes widgit
+		GameMode->CurrentWidget->SetHealthbar(healthPercent);
+	}
+		
+
+
 
 	UE_LOG(LogTemp, Warning, TEXT("Pressing Fire From Character"));
 
