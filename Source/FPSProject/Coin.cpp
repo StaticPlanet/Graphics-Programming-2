@@ -32,13 +32,19 @@ void ACoin::Tick(float DeltaTime)
 
 void ACoin::OnCollect()
 {
-	Super::OnCollect();
-
 	RotationRate = CollectRotationRate;
+
 	GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &ACoin::DeathTimerComplete, 0.5f, false);
 }
 
 void ACoin::DeathTimerComplete()
 {
+	AFPSProjectGameModeBase* GameMode = Cast<AFPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GameMode)
+	{
+		GameMode->CurrentWidget->SetScore(2);
+	}
+
 	Destroy();
 }

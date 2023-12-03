@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "PickUp.h"
+#include "Kismet/GameplayStatics.h"
+#include "FPSProjectGameModeBase.h"
 #include "Coin.generated.h"
 
 /**
@@ -13,7 +15,7 @@ UCLASS()
 class FPSPROJECT_API ACoin : public APickUp
 {
 	GENERATED_BODY()
-	
+
 public:
 	// Sets default values for this actor's properties
 	ACoin();
