@@ -3,23 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
-#include "EnemyAiController.generated.h"
+#include "BehaviorTree/BTTaskNode.h"
+#include "RandomLocationTask.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FPSPROJECT_API AEnemyAiController : public AAIController
+class FPSPROJECT_API URandomLocationTask : public UBTTaskNode
 {
 	GENERATED_BODY()
-
-public:
-
-
-protected:
-
-
-public:
 	
 };

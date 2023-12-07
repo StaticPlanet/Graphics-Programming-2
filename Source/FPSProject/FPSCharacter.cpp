@@ -43,7 +43,14 @@ void AFPSCharacter::BeginPlay()
 // Called every frame
 void AFPSCharacter::Tick(float DeltaTime)
 {
+	AFPSProjectGameModeBase* GameMode = Cast<AFPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
 	Super::Tick(DeltaTime);
+
+	if (GameMode)
+	{
+		GameMode->CurrentWidget->UIScore;
+	}
 
 }
 

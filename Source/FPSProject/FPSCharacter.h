@@ -41,6 +41,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		FVector MuzzleOffset;
 
+
+
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 		TSubclassOf<class AFPSProjectile> ProjectileClass;
 

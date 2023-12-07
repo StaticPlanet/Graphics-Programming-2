@@ -32,6 +32,8 @@ void ACoin::Tick(float DeltaTime)
 
 void ACoin::OnCollect()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Collided"))
+
 	RotationRate = CollectRotationRate;
 
 	GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &ACoin::DeathTimerComplete, 0.5f, false);

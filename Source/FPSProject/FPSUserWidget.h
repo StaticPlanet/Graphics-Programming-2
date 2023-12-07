@@ -29,7 +29,9 @@ public:
 
 	UFUNCTION()
 		void SetScore(int scoreAmount);
-private:
+	
 	int UIScore = 0;
+private:
+	
 
 };
