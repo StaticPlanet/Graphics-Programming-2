@@ -13,5 +13,8 @@ UCLASS()
 class FPSPROJECT_API UAttackPlayerTask : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
+private:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 };

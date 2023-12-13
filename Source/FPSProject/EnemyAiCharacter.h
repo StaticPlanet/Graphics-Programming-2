@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "FPSProjectGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
 #include "EnemyAiCharacter.generated.h"
 
 UCLASS()
@@ -26,4 +29,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* FPSCharacter, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(VisibleAnywhere)
+		USphereComponent* CollisionComponent;
+
+	float Health = 100;
+	const float MaxHealth = 100;
 };

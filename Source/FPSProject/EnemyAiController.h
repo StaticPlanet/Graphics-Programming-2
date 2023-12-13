@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "Perception/PawnSensingComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "FPSCharacter.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyAiController.generated.h"
 
 /**
@@ -15,11 +20,23 @@ class FPSPROJECT_API AEnemyAiController : public AAIController
 	GENERATED_BODY()
 
 public:
+	AEnemyAiController();
 
+	void BeginPlay() override;
 
-protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UBehaviorTree* BehaviorTree;
 
+	UPROPERTY(EditAnywhere)
+		class UPawnSensingComponent* PawnSensing;
 
-public:
-	
+	UFUNCTION()
+		void OnSeePawn(APawn* PlayerPawn);
+
+	UFUNCTION()
+		void SetCanSeePlayer(bool SeePlayer, class UObject* Player);
+
+	FTimerHandle RetriggerableTimerHandle;
+	FTimerDelegate FunctionDelegate;
+	void RunTriggerableTimer();
 };

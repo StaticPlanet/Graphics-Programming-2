@@ -47,11 +47,6 @@ void AFPSCharacter::Tick(float DeltaTime)
 
 	Super::Tick(DeltaTime);
 
-	if (GameMode)
-	{
-		GameMode->CurrentWidget->UIScore;
-	}
-
 }
 
 // Called to bind functionality to input
